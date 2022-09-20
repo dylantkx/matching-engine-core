@@ -445,6 +445,40 @@ func TestNearlyConcurrentMarketBuys(t *testing.T) {
 	}
 }
 
+func TestCancelOrder(t *testing.T) {
+	engine := me.NewMatchingEngine()
+
+	ord := model.OrderLimit{
+		ID:    "1",
+		Units: decimal.NewFromFloat(1),
+		Price: decimal.NewFromFloat(100),
+		Side:  model.OrderSide_Buy,
+	}
+	engine.ProcessLimitOrder(&ord)
+
+	cancels, err := engine.CancelOrder(model.Order{
+		ID:    ord.ID,
+		Units: ord.Units.Copy(),
+		Price: ord.Price.Copy(),
+		Side:  ord.Side,
+	})
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	sn := engine.GetOrderBookFullSnapshot()
+
+	if len(cancels) != 1 {
+		t.Fatalf("expect 1 cancel but got %d", len(cancels))
+	}
+	if cancels[0].OrderID != ord.ID || !cancels[0].Units.Equal(ord.Units) {
+		t.Fatalf("wrong cancel output: %+v", cancels)
+	}
+	if sn == nil || len(sn.Buys) != 0 {
+		t.Fatalf("expect order buy book size = 0 but got %d", len(sn.Buys))
+	}
+}
+
 func BenchmarkProcessLimitOrders(b *testing.B) {
 	b.StopTimer()
 	engine := me.NewMatchingEngine()

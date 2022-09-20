@@ -17,7 +17,7 @@ const (
 type Book interface {
 	AddBuyOrder(order model.Order)
 	AddSellOrder(order model.Order)
-	CancelOrder(order model.Order) error
+	CancelOrder(order model.Order) ([]model.OrderCancellation, error)
 	ClearBuySideByUnitsAndPrice(units decimal.Decimal, price decimal.Decimal) (clearedOrders []*model.Order)
 	ClearSellSideByUnitsAndPrice(units decimal.Decimal, price decimal.Decimal) (clearedOrders []*model.Order)
 	ClearBuySideByUnits(units decimal.Decimal) (clearedOrders []*model.Order)
@@ -105,7 +105,7 @@ func (b *book) AddSellOrder(order model.Order) {
 	}
 }
 
-func (b *book) CancelOrder(order model.Order) error {
+func (b *book) CancelOrder(order model.Order) (cancels []model.OrderCancellation, err error) {
 	var t *limitTree
 	var m map[string]*bookLimit
 	var best *bookLimit
@@ -123,7 +123,8 @@ func (b *book) CancelOrder(order model.Order) error {
 	}
 	bl := m[order.Price.String()]
 	if bl == nil {
-		return errors.New("order not found")
+		err = errors.New("order not found")
+		return
 	}
 	mu.Lock()
 	defer mu.Unlock()
@@ -135,7 +136,11 @@ func (b *book) CancelOrder(order model.Order) error {
 			best = nil
 		}
 	}
-	return nil
+	cancels = append(cancels, model.OrderCancellation{
+		OrderID: order.ID,
+		Units:   order.Units,
+	})
+	return
 }
 
 func (b *book) ClearBuySideByUnitsAndPrice(units decimal.Decimal, price decimal.Decimal) (clearedOrders []*model.Order) {

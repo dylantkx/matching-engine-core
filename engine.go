@@ -39,6 +39,10 @@ func (me *MatchingEngine) ProcessMarketOrder(order *model.OrderMarket) ([]model.
 	return me.processMarketSellOrder(order)
 }
 
+func (me *MatchingEngine) CancelOrder(order model.Order) ([]model.OrderCancellation, error) {
+	return me.book.CancelOrder(order)
+}
+
 func (me *MatchingEngine) processLimitBuyOrder(order *model.OrderLimit) (trades []model.Trade) {
 	if me.book.GetLowestSell() == nil || me.book.GetLowestSell().Price.GreaterThan(order.Price) {
 		me.book.AddBuyOrder(model.Order{

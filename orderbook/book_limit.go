@@ -61,6 +61,7 @@ func (bl *bookLimit) RemoveOrder(order *model.Order) {
 	if o == nil {
 		return
 	}
+	order.Units = o.Order.Units.Copy()
 	if o.prevBookOrder != nil {
 		o.prevBookOrder.nextBookOrder = o.nextBookOrder
 	}
