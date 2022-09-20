@@ -3,7 +3,7 @@ package model
 import "github.com/shopspring/decimal"
 
 type Order struct {
-	ID    int64
+	ID    string
 	Units decimal.Decimal
 	Price decimal.Decimal
 	Side  OrderSide

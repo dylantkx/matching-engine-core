@@ -13,7 +13,7 @@ type bookLimit struct {
 	Volume         decimal.Decimal
 	firstBookOrder *bookOrder
 	lastBookOrder  *bookOrder
-	bookOrderMap   map[int64]*bookOrder
+	bookOrderMap   map[string]*bookOrder
 	mu             sync.RWMutex
 }
 
@@ -22,7 +22,7 @@ func NewBookLimit() *bookLimit {
 		Price:        decimal.NewFromFloat(0),
 		Size:         decimal.NewFromFloat(0),
 		Volume:       decimal.NewFromFloat(0),
-		bookOrderMap: make(map[int64]*bookOrder),
+		bookOrderMap: make(map[string]*bookOrder),
 	}
 }
 

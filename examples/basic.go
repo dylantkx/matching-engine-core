@@ -13,13 +13,13 @@ func main() {
 
 	sellOrders := []model.OrderLimit{
 		{
-			ID:    1,
+			ID:    "1",
 			Units: decimal.NewFromFloat(1),
 			Price: decimal.NewFromFloat(100),
 			Side:  model.OrderSide_Sell,
 		},
 		{
-			ID:    2,
+			ID:    "2",
 			Units: decimal.NewFromFloat(1),
 			Price: decimal.NewFromFloat(200),
 			Side:  model.OrderSide_Sell,
@@ -33,7 +33,7 @@ func main() {
 	fmt.Printf("Order book snapshot 1: %+v\n", sn1)
 
 	buyOrder := model.OrderMarket{
-		ID:    3,
+		ID:    "3",
 		Units: decimal.NewFromFloat(1.5),
 		Side:  model.OrderSide_Buy,
 	}

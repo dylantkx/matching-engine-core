@@ -1,6 +1,7 @@
 package orderbook_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/dylantkx/matching-engine-core/model"
@@ -13,7 +14,7 @@ func TestGetFullBookSnapshot(t *testing.T) {
 
 	for i := 1; i <= 10; i++ {
 		b.AddBuyOrder(model.Order{
-			ID:    int64(i),
+			ID:    fmt.Sprintf("%d", i),
 			Units: decimal.NewFromFloat(float64(i)),
 			Price: decimal.NewFromFloat(float64(i) * 100),
 			Side:  model.OrderSide_Buy,
@@ -21,7 +22,7 @@ func TestGetFullBookSnapshot(t *testing.T) {
 	}
 	for i := 11; i <= 20; i++ {
 		b.AddSellOrder(model.Order{
-			ID:    int64(i),
+			ID:    fmt.Sprintf("%d", i),
 			Units: decimal.NewFromFloat(float64(i)),
 			Price: decimal.NewFromFloat(float64(i) * 100),
 			Side:  model.OrderSide_Sell,
@@ -42,7 +43,7 @@ func TestGetBookSnapshotWithDepth(t *testing.T) {
 
 	for i := 1; i <= 10; i++ {
 		b.AddBuyOrder(model.Order{
-			ID:    int64(i),
+			ID:    fmt.Sprintf("%d", i),
 			Units: decimal.NewFromFloat(float64(i)),
 			Price: decimal.NewFromFloat(float64(i) * 100),
 			Side:  model.OrderSide_Buy,
@@ -50,7 +51,7 @@ func TestGetBookSnapshotWithDepth(t *testing.T) {
 	}
 	for i := 11; i <= 20; i++ {
 		b.AddSellOrder(model.Order{
-			ID:    int64(i),
+			ID:    fmt.Sprintf("%d", i),
 			Units: decimal.NewFromFloat(float64(i)),
 			Price: decimal.NewFromFloat(float64(i) * 100),
 			Side:  model.OrderSide_Sell,
@@ -71,7 +72,7 @@ func TestGetBookSnapshotWithDepth2(t *testing.T) {
 
 	for i := 1; i <= 10; i++ {
 		b.AddBuyOrder(model.Order{
-			ID:    int64(i),
+			ID:    fmt.Sprintf("%d", i),
 			Units: decimal.NewFromFloat(float64(i)),
 			Price: decimal.NewFromFloat(float64(i) * 100),
 			Side:  model.OrderSide_Buy,
@@ -79,7 +80,7 @@ func TestGetBookSnapshotWithDepth2(t *testing.T) {
 	}
 	for i := 11; i <= 20; i++ {
 		b.AddSellOrder(model.Order{
-			ID:    int64(i),
+			ID:    fmt.Sprintf("%d", i),
 			Units: decimal.NewFromFloat(float64(i)),
 			Price: decimal.NewFromFloat(float64(i) * 100),
 			Side:  model.OrderSide_Sell,

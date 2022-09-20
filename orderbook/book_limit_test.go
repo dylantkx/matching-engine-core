@@ -1,6 +1,7 @@
 package orderbook_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/dylantkx/matching-engine-core/model"
@@ -12,7 +13,7 @@ func TestBookLimitInsertOrUpdateOrder(t *testing.T) {
 	bl := orderbook.NewBookLimit()
 
 	order := &model.Order{
-		ID:    1,
+		ID:    "1",
 		Units: decimal.NewFromFloat(1),
 		Price: decimal.NewFromFloat(100),
 		Side:  model.OrderSide_Buy,
@@ -37,7 +38,7 @@ func TestBookLimitRemoveOrder(t *testing.T) {
 	bl := orderbook.NewBookLimit()
 
 	order := &model.Order{
-		ID:    1,
+		ID:    "1",
 		Units: decimal.NewFromFloat(1),
 		Price: decimal.NewFromFloat(100),
 		Side:  model.OrderSide_Buy,
@@ -63,7 +64,7 @@ func TestBookLimitRemoveOrder2(t *testing.T) {
 	orders := make([]*model.Order, 0, 10)
 	for i := 0; i < 10; i++ {
 		order := &model.Order{
-			ID:    int64(i + 1),
+			ID:    fmt.Sprintf("%d", i+1),
 			Units: decimal.NewFromFloat(1),
 			Price: decimal.NewFromFloat(100),
 			Side:  model.OrderSide_Buy,

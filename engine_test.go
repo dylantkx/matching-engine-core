@@ -16,7 +16,7 @@ func TestProcessLimitOneBuyOrder(t *testing.T) {
 	engine := me.NewMatchingEngine()
 
 	ord := model.OrderLimit{
-		ID:    1,
+		ID:    "1",
 		Units: decimal.NewFromFloat(1),
 		Price: decimal.NewFromFloat(100),
 		Side:  model.OrderSide_Buy,
@@ -36,7 +36,7 @@ func TestProcessLimitOneSellOrder(t *testing.T) {
 	engine := me.NewMatchingEngine()
 
 	ord := model.OrderLimit{
-		ID:    1,
+		ID:    "1",
 		Units: decimal.NewFromFloat(1),
 		Price: decimal.NewFromFloat(100),
 		Side:  model.OrderSide_Sell,
@@ -57,13 +57,13 @@ func TestProcessLimitOrderWithoutTrades(t *testing.T) {
 
 	sellOrders := []model.OrderLimit{
 		{
-			ID:    1,
+			ID:    "1",
 			Units: decimal.NewFromFloat(1),
 			Price: decimal.NewFromFloat(100),
 			Side:  model.OrderSide_Sell,
 		},
 		{
-			ID:    2,
+			ID:    "2",
 			Units: decimal.NewFromFloat(1),
 			Price: decimal.NewFromFloat(200),
 			Side:  model.OrderSide_Sell,
@@ -78,7 +78,7 @@ func TestProcessLimitOrderWithoutTrades(t *testing.T) {
 	}
 
 	buyOrder := model.OrderLimit{
-		ID:    3,
+		ID:    "3",
 		Units: decimal.NewFromFloat(1),
 		Price: decimal.NewFromFloat(50),
 		Side:  model.OrderSide_Buy,
@@ -99,13 +99,13 @@ func TestLimitBuyOrderProducingTrades(t *testing.T) {
 
 	sellOrders := []model.OrderLimit{
 		{
-			ID:    1,
+			ID:    "1",
 			Units: decimal.NewFromFloat(1),
 			Price: decimal.NewFromFloat(100),
 			Side:  model.OrderSide_Sell,
 		},
 		{
-			ID:    2,
+			ID:    "2",
 			Units: decimal.NewFromFloat(1),
 			Price: decimal.NewFromFloat(200),
 			Side:  model.OrderSide_Sell,
@@ -120,7 +120,7 @@ func TestLimitBuyOrderProducingTrades(t *testing.T) {
 	}
 
 	buyOrder := model.OrderLimit{
-		ID:    3,
+		ID:    "3",
 		Units: decimal.NewFromFloat(1.5),
 		Price: decimal.NewFromFloat(200),
 		Side:  model.OrderSide_Buy,
@@ -146,13 +146,13 @@ func TestLimitSellOrderProducingTrades(t *testing.T) {
 
 	buyOrders := []model.OrderLimit{
 		{
-			ID:    1,
+			ID:    "1",
 			Units: decimal.NewFromFloat(1),
 			Price: decimal.NewFromFloat(100),
 			Side:  model.OrderSide_Buy,
 		},
 		{
-			ID:    2,
+			ID:    "2",
 			Units: decimal.NewFromFloat(1),
 			Price: decimal.NewFromFloat(200),
 			Side:  model.OrderSide_Buy,
@@ -167,7 +167,7 @@ func TestLimitSellOrderProducingTrades(t *testing.T) {
 	}
 
 	sellOrder := model.OrderLimit{
-		ID:    3,
+		ID:    "3",
 		Units: decimal.NewFromFloat(2),
 		Price: decimal.NewFromFloat(200),
 		Side:  model.OrderSide_Sell,
@@ -195,7 +195,7 @@ func TestProcessMarketOneBuyOrder(t *testing.T) {
 	engine := me.NewMatchingEngine()
 
 	ord := model.OrderMarket{
-		ID:    1,
+		ID:    "1",
 		Units: decimal.NewFromFloat(1),
 		Side:  model.OrderSide_Buy,
 	}
@@ -216,7 +216,7 @@ func TestProcessMarketOneSellOrder(t *testing.T) {
 	engine := me.NewMatchingEngine()
 
 	ord := model.OrderMarket{
-		ID:    1,
+		ID:    "1",
 		Units: decimal.NewFromFloat(1),
 		Side:  model.OrderSide_Sell,
 	}
@@ -238,13 +238,13 @@ func TestMarketBuyOrderProducingTrades(t *testing.T) {
 
 	sellOrders := []model.OrderLimit{
 		{
-			ID:    1,
+			ID:    "1",
 			Units: decimal.NewFromFloat(1),
 			Price: decimal.NewFromFloat(100),
 			Side:  model.OrderSide_Sell,
 		},
 		{
-			ID:    2,
+			ID:    "2",
 			Units: decimal.NewFromFloat(1),
 			Price: decimal.NewFromFloat(200),
 			Side:  model.OrderSide_Sell,
@@ -255,7 +255,7 @@ func TestMarketBuyOrderProducingTrades(t *testing.T) {
 	}
 
 	buyOrder := model.OrderMarket{
-		ID:    3,
+		ID:    "3",
 		Units: decimal.NewFromFloat(1.5),
 		Side:  model.OrderSide_Buy,
 	}
@@ -287,13 +287,13 @@ func TestMarketSellOrderProducingTrades(t *testing.T) {
 
 	buyOrders := []model.OrderLimit{
 		{
-			ID:    1,
+			ID:    "1",
 			Units: decimal.NewFromFloat(1),
 			Price: decimal.NewFromFloat(200),
 			Side:  model.OrderSide_Buy,
 		},
 		{
-			ID:    2,
+			ID:    "2",
 			Units: decimal.NewFromFloat(1),
 			Price: decimal.NewFromFloat(100),
 			Side:  model.OrderSide_Buy,
@@ -304,7 +304,7 @@ func TestMarketSellOrderProducingTrades(t *testing.T) {
 	}
 
 	sellOrder := model.OrderMarket{
-		ID:    3,
+		ID:    "3",
 		Units: decimal.NewFromFloat(1.5),
 		Side:  model.OrderSide_Sell,
 	}
@@ -336,13 +336,13 @@ func TestMarketBuyOrderProducingTradesWithCancels(t *testing.T) {
 
 	sellOrders := []model.OrderLimit{
 		{
-			ID:    1,
+			ID:    "1",
 			Units: decimal.NewFromFloat(1),
 			Price: decimal.NewFromFloat(100),
 			Side:  model.OrderSide_Sell,
 		},
 		{
-			ID:    2,
+			ID:    "2",
 			Units: decimal.NewFromFloat(1),
 			Price: decimal.NewFromFloat(200),
 			Side:  model.OrderSide_Sell,
@@ -353,7 +353,7 @@ func TestMarketBuyOrderProducingTradesWithCancels(t *testing.T) {
 	}
 
 	buyOrder := model.OrderMarket{
-		ID:    3,
+		ID:    "3",
 		Units: decimal.NewFromFloat(2.5),
 		Side:  model.OrderSide_Buy,
 	}
@@ -389,13 +389,13 @@ func TestNearlyConcurrentMarketBuys(t *testing.T) {
 
 	sellOrders := []model.OrderLimit{
 		{
-			ID:    1,
+			ID:    "1",
 			Units: decimal.NewFromFloat(1),
 			Price: decimal.NewFromFloat(100),
 			Side:  model.OrderSide_Sell,
 		},
 		{
-			ID:    2,
+			ID:    "2",
 			Units: decimal.NewFromFloat(1),
 			Price: decimal.NewFromFloat(200),
 			Side:  model.OrderSide_Sell,
@@ -406,12 +406,12 @@ func TestNearlyConcurrentMarketBuys(t *testing.T) {
 	}
 
 	buyOrder1 := model.OrderMarket{
-		ID:    3,
+		ID:    "3",
 		Units: decimal.NewFromFloat(1),
 		Side:  model.OrderSide_Buy,
 	}
 	buyOrder2 := model.OrderMarket{
-		ID:    4,
+		ID:    "4",
 		Units: decimal.NewFromFloat(1),
 		Side:  model.OrderSide_Buy,
 	}
@@ -451,7 +451,7 @@ func BenchmarkProcessLimitOrders(b *testing.B) {
 	orders := make([]*model.OrderLimit, 0, b.N)
 	for i := 0; i < b.N; i++ {
 		order := &model.OrderLimit{
-			ID:    int64(i + 1),
+			ID:    fmt.Sprintf("%d", i+1),
 			Units: decimal.NewFromFloat((rand.Float64() + float64(rand.Intn(2))) * 10),
 			Price: decimal.NewFromFloat((rand.Float64() + float64(rand.Intn(2))) * 100),
 			Side:  model.OrderSide_Buy,
@@ -470,7 +470,7 @@ func BenchmarkProcessLimitOrdersAsync(b *testing.B) {
 	orders := make([]*model.OrderLimit, 0, b.N)
 	for i := 0; i < b.N; i++ {
 		order := &model.OrderLimit{
-			ID:    int64(i + 1),
+			ID:    fmt.Sprintf("%d", i+1),
 			Units: decimal.NewFromFloat((rand.Float64() + float64(rand.Intn(2))) * 10),
 			Price: decimal.NewFromFloat((rand.Float64() + float64(rand.Intn(2))) * 100),
 			Side:  model.OrderSide_Buy,
@@ -496,7 +496,7 @@ func BenchmarkProcessOneMarketOrderProducingTrades(b *testing.B) {
 	orders := make([]*model.OrderLimit, 0, n)
 	for i := 0; i < n; i++ {
 		order := &model.OrderLimit{
-			ID:    int64(i + 1),
+			ID:    fmt.Sprintf("%d", i+1),
 			Units: decimal.NewFromFloat((rand.Float64() + float64(rand.Intn(2))) * 10),
 			Price: decimal.NewFromFloat((rand.Float64() + float64(rand.Intn(2))) * 100),
 			Side:  model.OrderSide_Buy,
@@ -508,7 +508,7 @@ func BenchmarkProcessOneMarketOrderProducingTrades(b *testing.B) {
 	}
 
 	order := &model.OrderMarket{
-		ID:    int64(n) + 1,
+		ID:    fmt.Sprintf("%d", n+1),
 		Units: decimal.NewFromFloat(100),
 		Side:  model.OrderSide_Sell,
 	}

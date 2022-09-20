@@ -11,8 +11,8 @@ import (
 
 func TestMarshalTrade(t *testing.T) {
 	tr := model.Trade{
-		BuyOrderID:   1,
-		SellOrderID:  2,
+		BuyOrderID:   "1",
+		SellOrderID:  "2",
 		Units:        decimal.NewFromFloat(1.5),
 		Price:        decimal.NewFromFloat(100),
 		IsBuyerMaker: false,
@@ -23,7 +23,7 @@ func TestMarshalTrade(t *testing.T) {
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
-	out := `{"buyOrderId":1,"sellOrderId":2,"units":"1.5","price":"100","isBuyerMaker":false,"eventTime":1663079295}`
+	out := `{"buyOrderId":"1","sellOrderId":"2","units":"1.5","price":"100","isBuyerMaker":false,"eventTime":1663079295}`
 	if string(b) != out {
 		t.Fatalf("wrong output, got %s", b)
 	}
