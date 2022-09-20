@@ -7,46 +7,39 @@ import (
 	"github.com/dylantkx/matching-engine-core/orderbook"
 )
 
-type MatchingEngine interface {
-	ProcessLimitOrder(order *model.OrderLimit) []model.Trade
-	ProcessMarketOrder(order *model.OrderMarket) ([]model.Trade, []model.OrderCancellation)
-	GetOrderBookFullSnapshot() *orderbook.BookSnapshot
-	GetOrderBookSnapshotWithDepth(depth int) *orderbook.BookSnapshot
-}
-
-type matchingEngine struct {
+type MatchingEngine struct {
 	book orderbook.Book
 }
 
-func NewMatchingEngine() *matchingEngine {
-	return &matchingEngine{
+func NewMatchingEngine() *MatchingEngine {
+	return &MatchingEngine{
 		book: orderbook.NewBook(),
 	}
 }
 
-func (me *matchingEngine) GetOrderBookFullSnapshot() *orderbook.BookSnapshot {
+func (me *MatchingEngine) GetOrderBookFullSnapshot() *orderbook.BookSnapshot {
 	return me.book.GetFullSnapshot()
 }
 
-func (me *matchingEngine) GetOrderBookSnapshotWithDepth(depth int) *orderbook.BookSnapshot {
+func (me *MatchingEngine) GetOrderBookSnapshotWithDepth(depth int) *orderbook.BookSnapshot {
 	return me.book.GetSnapshotWithDepth(depth)
 }
 
-func (me *matchingEngine) ProcessLimitOrder(order *model.OrderLimit) []model.Trade {
+func (me *MatchingEngine) ProcessLimitOrder(order *model.OrderLimit) []model.Trade {
 	if order.Side == model.OrderSide_Buy {
 		return me.processLimitBuyOrder(order)
 	}
 	return me.processLimitSellOrder(order)
 }
 
-func (me *matchingEngine) ProcessMarketOrder(order *model.OrderMarket) ([]model.Trade, []model.OrderCancellation) {
+func (me *MatchingEngine) ProcessMarketOrder(order *model.OrderMarket) ([]model.Trade, []model.OrderCancellation) {
 	if order.Side == model.OrderSide_Buy {
 		return me.processMarketBuyOrder(order)
 	}
 	return me.processMarketSellOrder(order)
 }
 
-func (me *matchingEngine) processLimitBuyOrder(order *model.OrderLimit) (trades []model.Trade) {
+func (me *MatchingEngine) processLimitBuyOrder(order *model.OrderLimit) (trades []model.Trade) {
 	if me.book.GetLowestSell() == nil || me.book.GetLowestSell().Price.GreaterThan(order.Price) {
 		me.book.AddBuyOrder(model.Order{
 			ID:    order.ID,
@@ -85,7 +78,7 @@ func (me *matchingEngine) processLimitBuyOrder(order *model.OrderLimit) (trades 
 	return
 }
 
-func (me *matchingEngine) processLimitSellOrder(order *model.OrderLimit) (trades []model.Trade) {
+func (me *MatchingEngine) processLimitSellOrder(order *model.OrderLimit) (trades []model.Trade) {
 	if me.book.GetHighestBuy() == nil || me.book.GetHighestBuy().Price.LessThan(order.Price) {
 		me.book.AddSellOrder(model.Order{
 			ID:    order.ID,
@@ -124,7 +117,7 @@ func (me *matchingEngine) processLimitSellOrder(order *model.OrderLimit) (trades
 	return
 }
 
-func (me *matchingEngine) processMarketBuyOrder(order *model.OrderMarket) (trades []model.Trade, cancels []model.OrderCancellation) {
+func (me *MatchingEngine) processMarketBuyOrder(order *model.OrderMarket) (trades []model.Trade, cancels []model.OrderCancellation) {
 	if me.book.GetLowestSell() == nil {
 		cancels = append(cancels, model.OrderCancellation{
 			OrderID: order.ID,
@@ -158,7 +151,7 @@ func (me *matchingEngine) processMarketBuyOrder(order *model.OrderMarket) (trade
 	return
 }
 
-func (me *matchingEngine) processMarketSellOrder(order *model.OrderMarket) (trades []model.Trade, cancels []model.OrderCancellation) {
+func (me *MatchingEngine) processMarketSellOrder(order *model.OrderMarket) (trades []model.Trade, cancels []model.OrderCancellation) {
 	if me.book.GetHighestBuy() == nil {
 		cancels = append(cancels, model.OrderCancellation{
 			OrderID: order.ID,
