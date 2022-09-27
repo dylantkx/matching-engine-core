@@ -24,6 +24,8 @@ type Book interface {
 	ClearSellSideByUnits(units decimal.Decimal) (clearedOrders []*model.Order)
 	GetFullSnapshot() *BookSnapshot
 	GetSnapshotWithDepth(depth int) *BookSnapshot
+	GetTotalBuyUnitsFromPrice(price decimal.Decimal) decimal.Decimal
+	GetTotalSellUnitsToPrice(price decimal.Decimal) decimal.Decimal
 	GetHighestBuy() *bookLimit
 	GetLowestSell() *bookLimit
 }
@@ -63,6 +65,34 @@ func (b *book) GetLowestSell() *bookLimit {
 	b.sellMu.RLock()
 	defer b.sellMu.RUnlock()
 	return b.lowestSell
+}
+
+func (b *book) GetTotalBuyUnitsFromPrice(price decimal.Decimal) decimal.Decimal {
+	b.buyMu.RLock()
+	defer b.buyMu.RUnlock()
+	sum := decimal.Zero
+	b.buyTree.Descend(func(item limitTreeNode) bool {
+		if item.LimitRef == nil || item.LimitRef.Price.LessThan(price) {
+			return false
+		}
+		sum = sum.Add(item.LimitRef.Size)
+		return true
+	})
+	return sum
+}
+
+func (b *book) GetTotalSellUnitsToPrice(price decimal.Decimal) decimal.Decimal {
+	b.sellMu.RLock()
+	defer b.sellMu.RUnlock()
+	sum := decimal.Zero
+	b.sellTree.Ascend(func(item limitTreeNode) bool {
+		if item.LimitRef == nil || item.LimitRef.Price.GreaterThan(price) {
+			return false
+		}
+		sum = sum.Add(item.LimitRef.Size)
+		return true
+	})
+	return sum
 }
 
 func (b *book) AddBuyOrder(order model.Order) {

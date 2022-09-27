@@ -5,6 +5,7 @@ import (
 
 	"github.com/dylantkx/matching-engine-core/model"
 	"github.com/dylantkx/matching-engine-core/orderbook"
+	"github.com/shopspring/decimal"
 )
 
 type MatchingEngine struct {
@@ -23,6 +24,14 @@ func (me *MatchingEngine) GetOrderBookFullSnapshot() *orderbook.BookSnapshot {
 
 func (me *MatchingEngine) GetOrderBookSnapshotWithDepth(depth int) *orderbook.BookSnapshot {
 	return me.book.GetSnapshotWithDepth(depth)
+}
+
+func (me *MatchingEngine) GetTotalBuyUnitsFromPrice(price decimal.Decimal) decimal.Decimal {
+	return me.book.GetTotalBuyUnitsFromPrice(price)
+}
+
+func (me *MatchingEngine) GetTotalSellUnitsToPrice(price decimal.Decimal) decimal.Decimal {
+	return me.book.GetTotalSellUnitsToPrice(price)
 }
 
 func (me *MatchingEngine) ProcessLimitOrder(order *model.OrderLimit) []model.Trade {

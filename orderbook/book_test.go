@@ -95,3 +95,77 @@ func TestGetBookSnapshotWithDepth2(t *testing.T) {
 		t.Fatalf("expect to have 10 sells, but got %d", len(sn.Sells))
 	}
 }
+
+func TestGetTotalBuyUnitsFromPrice(t *testing.T) {
+	b := orderbook.NewBook()
+
+	b.AddBuyOrder(model.Order{
+		ID:    "1",
+		Units: decimal.NewFromFloat(1),
+		Price: decimal.NewFromFloat(50),
+		Side:  model.OrderSide_Buy,
+	})
+	b.AddBuyOrder(model.Order{
+		ID:    "2",
+		Units: decimal.NewFromFloat(2),
+		Price: decimal.NewFromFloat(100),
+		Side:  model.OrderSide_Buy,
+	})
+	b.AddBuyOrder(model.Order{
+		ID:    "3",
+		Units: decimal.NewFromFloat(1),
+		Price: decimal.NewFromFloat(100),
+		Side:  model.OrderSide_Buy,
+	})
+
+	units := b.GetTotalBuyUnitsFromPrice(decimal.NewFromFloat(100))
+	if !units.Equal(decimal.NewFromFloat(3)) {
+		t.Fatalf("expect to units = 3, but got %s", units)
+	}
+
+	units = b.GetTotalBuyUnitsFromPrice(decimal.NewFromFloat(70))
+	if !units.Equal(decimal.NewFromFloat(3)) {
+		t.Fatalf("expect to units = 3, but got %s", units)
+	}
+	units = b.GetTotalBuyUnitsFromPrice(decimal.NewFromFloat(50))
+	if !units.Equal(decimal.NewFromFloat(4)) {
+		t.Fatalf("expect to units = 4, but got %s", units)
+	}
+}
+
+func TestGetTotalSellUnitsToPrice(t *testing.T) {
+	b := orderbook.NewBook()
+
+	b.AddSellOrder(model.Order{
+		ID:    "1",
+		Units: decimal.NewFromFloat(1),
+		Price: decimal.NewFromFloat(50),
+		Side:  model.OrderSide_Sell,
+	})
+	b.AddSellOrder(model.Order{
+		ID:    "2",
+		Units: decimal.NewFromFloat(2),
+		Price: decimal.NewFromFloat(100),
+		Side:  model.OrderSide_Sell,
+	})
+	b.AddSellOrder(model.Order{
+		ID:    "3",
+		Units: decimal.NewFromFloat(1),
+		Price: decimal.NewFromFloat(100),
+		Side:  model.OrderSide_Sell,
+	})
+
+	units := b.GetTotalSellUnitsToPrice(decimal.NewFromFloat(100))
+	if !units.Equal(decimal.NewFromFloat(4)) {
+		t.Fatalf("expect to units = 4, but got %s", units)
+	}
+
+	units = b.GetTotalSellUnitsToPrice(decimal.NewFromFloat(70))
+	if !units.Equal(decimal.NewFromFloat(1)) {
+		t.Fatalf("expect to units = 1, but got %s", units)
+	}
+	units = b.GetTotalSellUnitsToPrice(decimal.NewFromFloat(50))
+	if !units.Equal(decimal.NewFromFloat(1)) {
+		t.Fatalf("expect to units = 1, but got %s", units)
+	}
+}
