@@ -34,14 +34,14 @@ func (me *MatchingEngine) GetTotalSellUnitsToPrice(price decimal.Decimal) decima
 	return me.book.GetTotalSellUnitsToPrice(price)
 }
 
-func (me *MatchingEngine) ProcessLimitOrder(order *model.OrderLimit) []model.Trade {
+func (me *MatchingEngine) ProcessLimitOrder(order *model.OrderLimit) model.MatchResult {
 	if order.Side == model.OrderSide_Buy {
 		return me.processLimitBuyOrder(order)
 	}
 	return me.processLimitSellOrder(order)
 }
 
-func (me *MatchingEngine) ProcessMarketOrder(order *model.OrderMarket) ([]model.Trade, []model.OrderCancellation) {
+func (me *MatchingEngine) ProcessMarketOrder(order *model.OrderMarket) model.MatchResult {
 	if order.Side == model.OrderSide_Buy {
 		return me.processMarketBuyOrder(order)
 	}
@@ -52,7 +52,7 @@ func (me *MatchingEngine) CancelOrder(order model.Order) ([]model.OrderCancellat
 	return me.book.CancelOrder(order)
 }
 
-func (me *MatchingEngine) processLimitBuyOrder(order *model.OrderLimit) (trades []model.Trade) {
+func (me *MatchingEngine) processLimitBuyOrder(order *model.OrderLimit) (r model.MatchResult) {
 	if me.book.GetLowestSell() == nil || me.book.GetLowestSell().Price.GreaterThan(order.Price) {
 		me.book.AddBuyOrder(model.Order{
 			ID:    order.ID,
@@ -68,7 +68,7 @@ func (me *MatchingEngine) processLimitBuyOrder(order *model.OrderLimit) (trades 
 
 	matchedOrders := me.book.ClearSellSideByUnitsAndPrice(order.Units.Copy(), order.Price.Copy())
 	for _, o := range matchedOrders {
-		trades = append(trades, model.Trade{
+		r.Trades = append(r.Trades, model.Trade{
 			BuyOrderID:   order.ID,
 			SellOrderID:  o.ID,
 			Units:        o.Units,
@@ -91,7 +91,7 @@ func (me *MatchingEngine) processLimitBuyOrder(order *model.OrderLimit) (trades 
 	return
 }
 
-func (me *MatchingEngine) processLimitSellOrder(order *model.OrderLimit) (trades []model.Trade) {
+func (me *MatchingEngine) processLimitSellOrder(order *model.OrderLimit) (r model.MatchResult) {
 	if me.book.GetHighestBuy() == nil || me.book.GetHighestBuy().Price.LessThan(order.Price) {
 		me.book.AddSellOrder(model.Order{
 			ID:    order.ID,
@@ -107,7 +107,7 @@ func (me *MatchingEngine) processLimitSellOrder(order *model.OrderLimit) (trades
 
 	matchedOrders := me.book.ClearBuySideByUnitsAndPrice(order.Units.Copy(), order.Price.Copy())
 	for _, o := range matchedOrders {
-		trades = append(trades, model.Trade{
+		r.Trades = append(r.Trades, model.Trade{
 			BuyOrderID:   o.ID,
 			SellOrderID:  order.ID,
 			Units:        o.Units,
@@ -130,9 +130,9 @@ func (me *MatchingEngine) processLimitSellOrder(order *model.OrderLimit) (trades
 	return
 }
 
-func (me *MatchingEngine) processMarketBuyOrder(order *model.OrderMarket) (trades []model.Trade, cancels []model.OrderCancellation) {
+func (me *MatchingEngine) processMarketBuyOrder(order *model.OrderMarket) (r model.MatchResult) {
 	if me.book.GetLowestSell() == nil {
-		cancels = append(cancels, model.OrderCancellation{
+		r.Cancellations = append(r.Cancellations, model.OrderCancellation{
 			OrderID: order.ID,
 			Units:   order.Units,
 		})
@@ -144,7 +144,7 @@ func (me *MatchingEngine) processMarketBuyOrder(order *model.OrderMarket) (trade
 
 	matchedOrders := me.book.ClearSellSideByUnits(order.Units.Copy())
 	for _, o := range matchedOrders {
-		trades = append(trades, model.Trade{
+		r.Trades = append(r.Trades, model.Trade{
 			BuyOrderID:   order.ID,
 			SellOrderID:  o.ID,
 			Units:        o.Units,
@@ -156,7 +156,7 @@ func (me *MatchingEngine) processMarketBuyOrder(order *model.OrderMarket) (trade
 	}
 
 	if remainingUnits.IsPositive() {
-		cancels = append(cancels, model.OrderCancellation{
+		r.Cancellations = append(r.Cancellations, model.OrderCancellation{
 			OrderID: order.ID,
 			Units:   remainingUnits,
 		})
@@ -164,9 +164,9 @@ func (me *MatchingEngine) processMarketBuyOrder(order *model.OrderMarket) (trade
 	return
 }
 
-func (me *MatchingEngine) processMarketSellOrder(order *model.OrderMarket) (trades []model.Trade, cancels []model.OrderCancellation) {
+func (me *MatchingEngine) processMarketSellOrder(order *model.OrderMarket) (r model.MatchResult) {
 	if me.book.GetHighestBuy() == nil {
-		cancels = append(cancels, model.OrderCancellation{
+		r.Cancellations = append(r.Cancellations, model.OrderCancellation{
 			OrderID: order.ID,
 			Units:   order.Units,
 		})
@@ -178,7 +178,7 @@ func (me *MatchingEngine) processMarketSellOrder(order *model.OrderMarket) (trad
 
 	matchedOrders := me.book.ClearBuySideByUnits(order.Units.Copy())
 	for _, o := range matchedOrders {
-		trades = append(trades, model.Trade{
+		r.Trades = append(r.Trades, model.Trade{
 			BuyOrderID:   o.ID,
 			SellOrderID:  order.ID,
 			Units:        o.Units,
@@ -190,7 +190,7 @@ func (me *MatchingEngine) processMarketSellOrder(order *model.OrderMarket) (trad
 	}
 
 	if remainingUnits.IsPositive() {
-		cancels = append(cancels, model.OrderCancellation{
+		r.Cancellations = append(r.Cancellations, model.OrderCancellation{
 			OrderID: order.ID,
 			Units:   remainingUnits,
 		})

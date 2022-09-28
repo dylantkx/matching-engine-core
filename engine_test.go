@@ -21,11 +21,11 @@ func TestProcessLimitOneBuyOrder(t *testing.T) {
 		Price: decimal.NewFromFloat(100),
 		Side:  model.OrderSide_Buy,
 	}
-	trades := engine.ProcessLimitOrder(&ord)
+	r := engine.ProcessLimitOrder(&ord)
 	sn := engine.GetOrderBookFullSnapshot()
 
-	if len(trades) > 0 {
-		t.Fatalf("expect no trades but got %d", len(trades))
+	if len(r.Trades) > 0 {
+		t.Fatalf("expect no trades but got %d", len(r.Trades))
 	}
 	if sn == nil || len(sn.Buys) != 1 {
 		t.Fatalf("expect order buy book size = 1 but got %d", len(sn.Buys))
@@ -41,11 +41,11 @@ func TestProcessLimitOneSellOrder(t *testing.T) {
 		Price: decimal.NewFromFloat(100),
 		Side:  model.OrderSide_Sell,
 	}
-	trades := engine.ProcessLimitOrder(&ord)
+	r := engine.ProcessLimitOrder(&ord)
 	sn := engine.GetOrderBookFullSnapshot()
 
-	if len(trades) > 0 {
-		t.Fatalf("expect no trades but got %d", len(trades))
+	if len(r.Trades) > 0 {
+		t.Fatalf("expect no trades but got %d", len(r.Trades))
 	}
 	if sn == nil || len(sn.Sells) != 1 {
 		t.Fatalf("expect order book sell size = 1 but got %d", len(sn.Sells))
@@ -83,11 +83,11 @@ func TestProcessLimitOrderWithoutTrades(t *testing.T) {
 		Price: decimal.NewFromFloat(50),
 		Side:  model.OrderSide_Buy,
 	}
-	trades := engine.ProcessLimitOrder(&buyOrder)
+	r := engine.ProcessLimitOrder(&buyOrder)
 	sn2 := engine.GetOrderBookFullSnapshot()
 
-	if len(trades) != 0 {
-		t.Fatalf("expect 1 trade but got %d", len(trades))
+	if len(r.Trades) != 0 {
+		t.Fatalf("expect 1 trade but got %d", len(r.Trades))
 	}
 	if sn2 == nil || len(sn2.Buys) != 1 {
 		t.Fatalf("expect order buy book size = 1 but got %d", len(sn2.Buys))
@@ -125,13 +125,13 @@ func TestLimitBuyOrderProducingTrades(t *testing.T) {
 		Price: decimal.NewFromFloat(200),
 		Side:  model.OrderSide_Buy,
 	}
-	trades := engine.ProcessLimitOrder(&buyOrder)
+	r := engine.ProcessLimitOrder(&buyOrder)
 	sn2 := engine.GetOrderBookFullSnapshot()
 
-	if len(trades) != 2 {
-		t.Fatalf("expect 2 trade but got %d", len(trades))
+	if len(r.Trades) != 2 {
+		t.Fatalf("expect 2 trade but got %d", len(r.Trades))
 	}
-	tr := trades[0]
+	tr := r.Trades[0]
 	if tr.BuyOrderID != buyOrder.ID || tr.IsBuyerMaker || tr.Price.GreaterThan(buyOrder.Price) || !tr.Units.Equal(sellOrders[0].Units) {
 		t.Fatalf("wrong trade output: %+v", tr)
 	}
@@ -172,13 +172,13 @@ func TestLimitSellOrderProducingTrades(t *testing.T) {
 		Price: decimal.NewFromFloat(200),
 		Side:  model.OrderSide_Sell,
 	}
-	trades := engine.ProcessLimitOrder(&sellOrder)
+	r := engine.ProcessLimitOrder(&sellOrder)
 	sn2 := engine.GetOrderBookFullSnapshot()
 
-	if len(trades) != 1 {
-		t.Fatalf("expect 1 trade but got %d", len(trades))
+	if len(r.Trades) != 1 {
+		t.Fatalf("expect 1 trade but got %d", len(r.Trades))
 	}
-	tr := trades[0]
+	tr := r.Trades[0]
 	if tr.SellOrderID != sellOrder.ID || !tr.IsBuyerMaker || tr.Price.LessThan(sellOrder.Price) || !tr.Units.Equal(decimal.NewFromFloat(1)) {
 		t.Fatalf("wrong trade output: %+v", tr)
 	}
@@ -199,16 +199,16 @@ func TestProcessMarketOneBuyOrder(t *testing.T) {
 		Units: decimal.NewFromFloat(1),
 		Side:  model.OrderSide_Buy,
 	}
-	trades, cancels := engine.ProcessMarketOrder(&ord)
+	r := engine.ProcessMarketOrder(&ord)
 
-	if len(trades) > 0 {
-		t.Fatalf("expect no trades but got %d", len(trades))
+	if len(r.Trades) > 0 {
+		t.Fatalf("expect no trades but got %d", len(r.Trades))
 	}
-	if len(cancels) != 1 {
-		t.Fatalf("expect 1 cancellation but got %d", len(cancels))
+	if len(r.Cancellations) != 1 {
+		t.Fatalf("expect 1 cancellation but got %d", len(r.Cancellations))
 	}
-	if !cancels[0].Units.Equal(ord.Units) {
-		t.Fatalf("expect to cancel whole order, but got %s", cancels[0].Units)
+	if !r.Cancellations[0].Units.Equal(ord.Units) {
+		t.Fatalf("expect to cancel whole order, but got %s", r.Cancellations[0].Units)
 	}
 }
 
@@ -220,16 +220,16 @@ func TestProcessMarketOneSellOrder(t *testing.T) {
 		Units: decimal.NewFromFloat(1),
 		Side:  model.OrderSide_Sell,
 	}
-	trades, cancels := engine.ProcessMarketOrder(&ord)
+	r := engine.ProcessMarketOrder(&ord)
 
-	if len(trades) > 0 {
-		t.Fatalf("expect no trades but got %d", len(trades))
+	if len(r.Trades) > 0 {
+		t.Fatalf("expect no trades but got %d", len(r.Trades))
 	}
-	if len(cancels) != 1 {
-		t.Fatalf("expect 1 cancellation but got %d", len(cancels))
+	if len(r.Cancellations) != 1 {
+		t.Fatalf("expect 1 cancellation but got %d", len(r.Cancellations))
 	}
-	if !cancels[0].Units.Equal(ord.Units) {
-		t.Fatalf("expect to cancel whole order, but got %s", cancels[0].Units)
+	if !r.Cancellations[0].Units.Equal(ord.Units) {
+		t.Fatalf("expect to cancel whole order, but got %s", r.Cancellations[0].Units)
 	}
 }
 
@@ -259,17 +259,16 @@ func TestMarketBuyOrderProducingTrades(t *testing.T) {
 		Units: decimal.NewFromFloat(1.5),
 		Side:  model.OrderSide_Buy,
 	}
-	trades, cancels := engine.ProcessMarketOrder(&buyOrder)
+	r := engine.ProcessMarketOrder(&buyOrder)
 	sn2 := engine.GetOrderBookFullSnapshot()
 
-	if len(trades) != 2 {
-		t.Fatalf("expect 2 trade but got %d", len(trades))
+	if len(r.Trades) != 2 {
+		t.Fatalf("expect 2 trades but got %d", len(r.Trades))
 	}
-	if len(cancels) != 0 {
-		t.Fatalf("expect 0 cancels but got %d", len(cancels))
+	if len(r.Cancellations) != 0 {
+		t.Fatalf("expect 0 cancels but got %d", len(r.Cancellations))
 	}
-	tr1 := trades[0]
-	tr2 := trades[1]
+	tr1, tr2 := r.Trades[0], r.Trades[1]
 	if tr1.BuyOrderID != buyOrder.ID || tr1.IsBuyerMaker || !tr1.Price.Equal(sellOrders[0].Price) || !tr1.Units.Equal(sellOrders[0].Units) {
 		t.Fatalf("wrong trade output: %+v", tr1)
 	}
@@ -308,17 +307,16 @@ func TestMarketSellOrderProducingTrades(t *testing.T) {
 		Units: decimal.NewFromFloat(1.5),
 		Side:  model.OrderSide_Sell,
 	}
-	trades, cancels := engine.ProcessMarketOrder(&sellOrder)
+	r := engine.ProcessMarketOrder(&sellOrder)
 	sn2 := engine.GetOrderBookFullSnapshot()
 
-	if len(trades) != 2 {
-		t.Fatalf("expect 2 trade but got %d", len(trades))
+	if len(r.Trades) != 2 {
+		t.Fatalf("expect 2 trade but got %d", len(r.Trades))
 	}
-	if len(cancels) != 0 {
-		t.Fatalf("expect 0 cancels but got %d", len(cancels))
+	if len(r.Cancellations) != 0 {
+		t.Fatalf("expect 0 cancels but got %d", len(r.Cancellations))
 	}
-	tr1 := trades[0]
-	tr2 := trades[1]
+	tr1, tr2 := r.Trades[0], r.Trades[1]
 	if tr1.SellOrderID != sellOrder.ID || !tr1.IsBuyerMaker || !tr1.Price.Equal(buyOrders[0].Price) || !tr1.Units.Equal(buyOrders[0].Units) {
 		t.Fatalf("wrong trade output: %+v", tr1)
 	}
@@ -357,25 +355,24 @@ func TestMarketBuyOrderProducingTradesWithCancels(t *testing.T) {
 		Units: decimal.NewFromFloat(2.5),
 		Side:  model.OrderSide_Buy,
 	}
-	trades, cancels := engine.ProcessMarketOrder(&buyOrder)
+	r := engine.ProcessMarketOrder(&buyOrder)
 	sn2 := engine.GetOrderBookFullSnapshot()
 
-	if len(trades) != 2 {
-		t.Fatalf("expect 2 trade but got %d", len(trades))
+	if len(r.Trades) != 2 {
+		t.Fatalf("expect 2 trade but got %d", len(r.Trades))
 	}
-	if len(cancels) != 1 {
-		t.Fatalf("expect 1 cancels but got %d", len(cancels))
+	if len(r.Cancellations) != 1 {
+		t.Fatalf("expect 1 cancels but got %d", len(r.Cancellations))
 	}
-	tr1 := trades[0]
-	tr2 := trades[1]
+	tr1, tr2 := r.Trades[0], r.Trades[1]
 	if tr1.BuyOrderID != buyOrder.ID || tr1.IsBuyerMaker || !tr1.Price.Equal(sellOrders[0].Price) || !tr1.Units.Equal(sellOrders[0].Units) {
 		t.Fatalf("wrong trade output: %+v", tr1)
 	}
 	if tr2.BuyOrderID != buyOrder.ID || tr2.IsBuyerMaker || !tr2.Price.Equal(sellOrders[1].Price) || !tr2.Units.Equal(sellOrders[0].Units) {
 		t.Fatalf("wrong trade output: %+v", tr2)
 	}
-	if !cancels[0].Units.Equal(buyOrder.Units.Sub(sellOrders[0].Units.Add(sellOrders[1].Units))) {
-		t.Fatalf("wrong cancelled units, got %s", cancels[0].Units)
+	if !r.Cancellations[0].Units.Equal(buyOrder.Units.Sub(sellOrders[0].Units.Add(sellOrders[1].Units))) {
+		t.Fatalf("wrong cancelled units, got %s", r.Cancellations[0].Units)
 	}
 
 	if sn2 == nil || len(sn2.Sells) != 0 {
@@ -423,12 +420,14 @@ func TestNearlyConcurrentMarketBuys(t *testing.T) {
 
 	go func() {
 		defer wg.Done()
-		trades_1, _ = engine.ProcessMarketOrder(&buyOrder1)
+		r := engine.ProcessMarketOrder(&buyOrder1)
+		trades_1 = r.Trades
 	}()
 	go func() {
 		time.Sleep(time.Millisecond * 1)
 		defer wg.Done()
-		trades_2, _ = engine.ProcessMarketOrder(&buyOrder2)
+		r := engine.ProcessMarketOrder(&buyOrder2)
+		trades_2 = r.Trades
 	}()
 
 	wg.Wait()

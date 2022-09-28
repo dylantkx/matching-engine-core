@@ -37,9 +37,9 @@ func main() {
 		Units: decimal.NewFromFloat(1.5),
 		Side:  model.OrderSide_Buy,
 	}
-	trades, cancels := engine.ProcessMarketOrder(&buyOrder)
-	fmt.Printf("Trades: %+v\n", trades)
-	fmt.Printf("Cancels: %+v\n", cancels)
+	r := engine.ProcessMarketOrder(&buyOrder)
+	fmt.Printf("Trades: %+v\n", r.Trades)
+	fmt.Printf("Cancels: %+v\n", r.Cancellations)
 
 	sn2 := engine.GetOrderBookFullSnapshot()
 	fmt.Printf("Order book snapshot 2: %+v\n", sn2)
