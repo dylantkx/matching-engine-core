@@ -12,6 +12,50 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+func TestGetHighestBuyPrice(t *testing.T) {
+	engine := me.NewMatchingEngine()
+
+	p := engine.GetHighestBuyPrice()
+	if !p.IsZero() {
+		t.Fatalf("expect highest buy to be 0, but got %s", p)
+	}
+
+	ord := model.OrderLimit{
+		ID:    "1",
+		Units: decimal.NewFromFloat(1),
+		Price: decimal.NewFromFloat(100),
+		Side:  model.OrderSide_Buy,
+	}
+	engine.ProcessLimitOrder(&ord)
+
+	p = engine.GetHighestBuyPrice()
+	if !p.Equal(decimal.NewFromFloat(100)) {
+		t.Fatalf("expect highest buy to be 100, but got %s", p)
+	}
+}
+
+func TestGetLowestSellPrice(t *testing.T) {
+	engine := me.NewMatchingEngine()
+
+	p := engine.GetLowestSellPrice()
+	if !p.IsZero() {
+		t.Fatalf("expect lowest sell to be 0, but got %s", p)
+	}
+
+	ord := model.OrderLimit{
+		ID:    "1",
+		Units: decimal.NewFromFloat(1),
+		Price: decimal.NewFromFloat(100),
+		Side:  model.OrderSide_Sell,
+	}
+	engine.ProcessLimitOrder(&ord)
+
+	p = engine.GetLowestSellPrice()
+	if !p.Equal(decimal.NewFromFloat(100)) {
+		t.Fatalf("expect lowest sell to be 100, but got %s", p)
+	}
+}
+
 func TestProcessLimitOneBuyOrder(t *testing.T) {
 	engine := me.NewMatchingEngine()
 

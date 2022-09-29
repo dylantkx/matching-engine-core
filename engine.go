@@ -18,6 +18,22 @@ func NewMatchingEngine() *MatchingEngine {
 	}
 }
 
+func (me *MatchingEngine) GetHighestBuyPrice() decimal.Decimal {
+	best := me.book.GetHighestBuy()
+	if best == nil {
+		return decimal.Zero
+	}
+	return best.Price
+}
+
+func (me *MatchingEngine) GetLowestSellPrice() decimal.Decimal {
+	best := me.book.GetLowestSell()
+	if best == nil {
+		return decimal.Zero
+	}
+	return best.Price
+}
+
 func (me *MatchingEngine) GetOrderBookFullSnapshot() *orderbook.BookSnapshot {
 	return me.book.GetFullSnapshot()
 }
